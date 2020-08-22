@@ -1,5 +1,7 @@
 let myEvents = [];
 let eventsRunning = false;
+let tipLocale = 'en-US';
+let tipCurrency = 'USD';
 
 let animate=()=>{
 
@@ -93,6 +95,7 @@ function processEvent(e){
             out_str = `<span class="char text">${stringToAnimatedHTML(event.sender)}</span>${getTier(event.tier)}<span class="icons icons-D char">D</span><span class="char text">${stringToAnimatedHTML(event.name)}</span>`;
         } else {
             console.log(`subscribed: ${event}`);
+            out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span>`;
         }
         if (event.gifted){
             console.log(`bulk gifts: ${event}`);
@@ -101,8 +104,11 @@ function processEvent(e){
         console.log(`hosted: ${event}`);
     } else if (listener === 'cheer'){
         console.log(`cheer: ${event}`);
+        out_str = `<span class="char text">${stringToAnimatedHTML(event.name + "&nbsp;x")}</span><span class="char text">${stringToAnimatedHTML(event.amount)}</span><span class="icons icons-A char">A</span>`;
     } else if (listener === 'tip'){
         console.log(`tip: ${event}`);
+        // name - I$
+        out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span><span class="char text">&nbsp</span><span class="char text">-</span><span class="char text">&nbsp</span><span class="char text">${stringToAnimatedHTML(currencify(event.amount))}</span>`;
     } else if (listener === 'raid'){
         console.log(`raid: ${event}`);
     }
@@ -120,6 +126,16 @@ function getTier(tier){
             return `<span class="char">Prime</span>`;
     }
 }
+
+
+const currencify = (a) => {
+    try {
+        const c = a.toLocaleString(tipLocale, {style: 'currency', currency: tipCurrency, minimumFractionDigits: 2});
+        return c.substr(-3) === '.00' ? c.substr(0, c.length-3) : c;
+    } catch(e) {
+        return a;
+    }
+};
 // let eventsLimit = 5,
 //     userLocale = "en-US",
 //     includeFollowers = true,
