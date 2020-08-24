@@ -3,18 +3,18 @@ let eventsRunning = false;
 let tipLocale = 'en-US';
 let tipCurrency = 'USD';
 
-let animate=()=>{
+let animate = () => {
 
-    if (myEvents.length !== 0){
-        eventsRunning = true;
-    }
-    myEvents.forEach(ele => {
+    // if (myEvents.length !== 0) {
+    //     eventsRunning = true;
+    // }
+    // myEvents.forEach(ele => {
 
-        const userNameContainer = document.querySelector('.container .letters');
+    // const userNameContainer = document.querySelector('.container .letters');
 
-        // change the inner html to animate it 🤪
-        userNameContainer.innerHTML = stringToAnimatedHTML(`${ele.type} + ${ele.name}`);
-        anime.timeline({ loop: false })
+    // change the inner html to animate it 🤪
+    // userNameContainer.innerHTML = stringToAnimatedHTML(`${ele.type} + ${ele.name}`);
+    anime.timeline({ loop: false })
         .add({
             targets: '.container .line',
             scaleX: [0, 1],
@@ -38,14 +38,15 @@ let animate=()=>{
             easing: "easeOutExpo",
             delay: 1000
         });
-        myEvents.slice();
-    });
+    // SE_API.resumeQueue();
+    // myEvents.slice();
+    // });
 
-    if (myEvents.length !== 0){
-        animate();
-    } else {
-        eventsRunning = False;
-    }
+    // if (myEvents.length !== 0) {
+    //     animate();
+    // } else {
+    //     eventsRunning = False;
+    // }
 }
 
 window.addEventListener('onEventReceived', function(obj) {
@@ -58,7 +59,7 @@ window.addEventListener('onEventReceived', function(obj) {
 
     const listener = obj.detail.listener.split("-")[0];
     const event = obj.detail.event;
-    
+
     console.log(obj.detail);
 
     processEvent(obj.detail);
@@ -80,42 +81,48 @@ function stringToAnimatedHTML(s) {
     return stringAsArray.join('');
 }
 
-function processEvent(e){
+function processEvent(e) {
     const listener = e.listener.split("-")[0];
-    const event =  e.event;
+    const event = e.event;
 
     out_str = ''
-    if (listener === 'follower'){
+    if (listener === 'follower') {
         console.log(`follow ${event}`);
         out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span><span class="icons icons-S char">S</span>`;
-    } else if (listener === 'subscriber'){
+    } else if (listener === 'subscriber') {
         // gifted event
-        if (event.amount === 'gift'){
+        if (event.amount === 'gift') {
             console.log(`gifted: ${event}`)
             out_str = `<span class="char text">${stringToAnimatedHTML(event.sender)}</span>${getTier(event.tier)}<span class="icons icons-D char">D</span><span class="char text">${stringToAnimatedHTML(event.name)}</span>`;
         } else {
             console.log(`subscribed: ${event}`);
             out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span>`;
         }
-        if (event.gifted){
+        if (event.gifted) {
             console.log(`bulk gifts: ${event}`);
         }
-    } else if (listener === 'host'){
+    } else if (listener === 'host') {
         console.log(`hosted: ${event}`);
-    } else if (listener === 'cheer'){
+    } else if (listener === 'cheer') {
         console.log(`cheer: ${event}`);
-        out_str = `<span class="char text">${stringToAnimatedHTML(event.name + "&nbsp;x")}</span><span class="char text">${stringToAnimatedHTML(event.amount)}</span><span class="icons icons-A char">A</span>`;
-    } else if (listener === 'tip'){
+        out_str = `${stringToAnimatedHTML(event.name)}<span class="char text">&nbsp;</span><span class="char text">x</span>${stringToAnimatedHTML(event.amount)}<span class="icons icons-A char">A</span>`;
+    } else if (listener === 'tip') {
         console.log(`tip: ${event}`);
-        // name - I$
-        out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span><span class="char text">&nbsp</span><span class="char text">-</span><span class="char text">&nbsp</span><span class="char text">${stringToAnimatedHTML(currencify(event.amount))}</span>`;
-    } else if (listener === 'raid'){
+        out_str = `${stringToAnimatedHTML(event.name)}<span class="char text">&nbsp;</span>${stringToAnimatedHTML(currencify(event.amount))}`;
+    } else if (listener === 'raid') {
         console.log(`raid: ${event}`);
+        out_str = `${stringToAnimatedHTML(event.name)}<span class="char text">&nbsp;</span><span class="icons icons-H char">H</span><span class="char text">x</span>${stringToAnimatedHTML(event.amount)}`;
     }
+    console.log(out_str);
+
+    // const userNameContainer = document.querySelector('.container .letters');
+    // userNameContainer.innerHTML = out_str;
+    // animate();
+    // userNameContainer.innerHTML = "";
 }
 
-function getTier(tier){
-    switch(String(tier)){
+function getTier(tier) {
+    switch (String(tier)) {
         case '1000':
             return `<span class="char">Tier 1</span>`;
         case '2000':
@@ -130,9 +137,9 @@ function getTier(tier){
 
 const currencify = (a) => {
     try {
-        const c = a.toLocaleString(tipLocale, {style: 'currency', currency: tipCurrency, minimumFractionDigits: 2});
-        return c.substr(-3) === '.00' ? c.substr(0, c.length-3) : c;
-    } catch(e) {
+        const c = a.toLocaleString(tipLocale, { style: 'currency', currency: tipCurrency, minimumFractionDigits: 2 });
+        return c.substr(-3) === '.00' ? c.substr(0, c.length - 3) : c;
+    } catch (e) {
         return a;
     }
 };
