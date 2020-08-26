@@ -37,7 +37,7 @@ let animate = async() => {
         delay: (el, i) => 150 + 25 * i
             // complete: console.log("Add2")
     }).add({
-        targets: '.container .text, .container .line',
+        targets: '.container .char, .container .line',
         opacity: 0,
         duration: 1000,
         easing: "easeOutExpo",
@@ -138,11 +138,6 @@ function processEvent(e) {
     // console.log(`Events list length before append: ${myEvents.length}`);
     myEvents.push(out_str);
     // console.log(`Events list length after append: ${myEvents.length}`);
-
-    // const userNameContainer = document.querySelector('.container .letters');
-    // userNameContainer.innerHTML = out_str;
-    // animate();
-    // userNameContainer.innerHTML = "";
 }
 
 function getTier(tier) {
@@ -167,6 +162,7 @@ const currencify = (a) => {
         return a;
     }
 };
+
 // let eventsLimit = 5,
 //     userLocale = "en-US",
 //     includeFollowers = true,
