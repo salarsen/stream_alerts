@@ -1,52 +1,74 @@
 let myEvents = [];
-let eventsRunning = false;
+let running = false;
 let tipLocale = 'en-US';
 let tipCurrency = 'USD';
 
-let animate = () => {
 
-    // if (myEvents.length !== 0) {
-    //     eventsRunning = true;
-    // }
-    // myEvents.forEach(ele => {
 
-    // const userNameContainer = document.querySelector('.container .letters');
+let animate = async() => {
+
+    // running = true;
+    console.log(`Event Length: ${myEvents.length}`);
+
+    const userNameContainer = document.querySelector('#letters');
 
     // change the inner html to animate it 🤪
-    // userNameContainer.innerHTML = stringToAnimatedHTML(`${ele.type} + ${ele.name}`);
-    anime.timeline({ loop: false })
-        .add({
-            targets: '.container .line',
-            scaleX: [0, 1],
-            opacity: [0.5, 1],
-            easing: "easeInOutExpo",
-            duration: 900
-        }).add({
-            targets: '.container .text',
-            opacity: [0, 1],
-            translateX: [40, 0],
-            translateZ: 0,
-            scaleX: [0.3, 1],
-            easing: "easeOutExpo",
-            duration: 800,
-            offset: '-=600',
-            delay: (el, i) => 150 + 25 * i
-        }).add({
-            targets: '.container .text, .container .line',
-            opacity: 0,
-            duration: 1000,
-            easing: "easeOutExpo",
-            delay: 1000
-        });
-    // SE_API.resumeQueue();
-    // myEvents.slice();
-    // });
+    // console.log(`Setting innerHTML to: ${myEvents[0]}`)
+    userNameContainer.innerHTML = myEvents[0];
+    anime.timeline({
+        loop: false,
+        // complete: console.log("Add Main"),
+    }).add({
+        targets: '.container .line',
+        scaleX: [0, 1],
+        opacity: [0.5, 1],
+        easing: "easeInOutExpo",
+        duration: 900
+            // complete: console.log("Add1"),
+    }).add({
+        targets: '.container .text',
+        opacity: [0, 1],
+        translateX: [40, 0],
+        translateZ: 0,
+        scaleX: [0.3, 1],
+        easing: "easeOutExpo",
+        duration: 800,
+        offset: '-=600',
+        delay: (el, i) => 150 + 25 * i
+            // complete: console.log("Add2")
+    }).add({
+        targets: '.container .text, .container .line',
+        opacity: 0,
+        duration: 1000,
+        easing: "easeOutExpo",
+        delay: 1000,
+        complete: () => {
+            console.log(`Animation completed, removing contents and slicing array of length ${myEvents.length}`)
+            myEvents.splice(0, 1);
+            // console.log(`Array now: ${myEvents.length}`);
+            if (myEvents.length > 0) {
+                animate();
+            } else {
+                running = false;
+            }
+        }
+    });
+};
 
-    // if (myEvents.length !== 0) {
-    //     animate();
-    // } else {
-    //     eventsRunning = False;
-    // }
+
+setInterval(displayEvents, 3000);
+
+function displayEvents() {
+    // console.log(`Checking if displayEvents running.`)
+    console.log(`Running: ${running}, events count: ${myEvents.length}`)
+    if (!running && myEvents.length > 0) {
+        // console.log(`Display events not running, execute since events.length is greater than 0`)
+        running = true;
+        console.log(`running now: ${running}`);
+        animate();
+        // running = animate();
+    }
+    // console.log(`running: ${running}`);
 }
 
 window.addEventListener('onEventReceived', function(obj) {
@@ -60,7 +82,7 @@ window.addEventListener('onEventReceived', function(obj) {
     const listener = obj.detail.listener.split("-")[0];
     const event = obj.detail.event;
 
-    console.log(obj.detail);
+    // console.log(obj.detail);
 
     processEvent(obj.detail);
     // setTimeout(animate,2500);
@@ -68,7 +90,7 @@ window.addEventListener('onEventReceived', function(obj) {
 });
 
 // setInterval(() => {
-//     if (myEvents.length !== 0 && !eventsRunning){
+//     if (myEvents.length !== 0 && !running){
 //         animate();
 //     }
 // }, 3000);
@@ -87,15 +109,15 @@ function processEvent(e) {
 
     out_str = ''
     if (listener === 'follower') {
-        console.log(`follow ${event}`);
+        console.log(`follow ${event.name}`);
         out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span><span class="icons icons-S char">S</span>`;
     } else if (listener === 'subscriber') {
         // gifted event
         if (event.amount === 'gift') {
-            console.log(`gifted: ${event}`)
+            console.log(`gifted: ${event.sender}`)
             out_str = `<span class="char text">${stringToAnimatedHTML(event.sender)}</span>${getTier(event.tier)}<span class="icons icons-D char">D</span><span class="char text">${stringToAnimatedHTML(event.name)}</span>`;
         } else {
-            console.log(`subscribed: ${event}`);
+            console.log(`subscribed: ${event.name}`);
             out_str = `<span class="char text">${stringToAnimatedHTML(event.name)}</span>`;
         }
         if (event.gifted) {
@@ -113,7 +135,9 @@ function processEvent(e) {
         console.log(`raid: ${event}`);
         out_str = `${stringToAnimatedHTML(event.name)}<span class="char text">&nbsp;</span><span class="icons icons-H char">H</span><span class="char text">x</span>${stringToAnimatedHTML(event.amount)}`;
     }
-    console.log(out_str);
+    // console.log(`Events list length before append: ${myEvents.length}`);
+    myEvents.push(out_str);
+    // console.log(`Events list length after append: ${myEvents.length}`);
 
     // const userNameContainer = document.querySelector('.container .letters');
     // userNameContainer.innerHTML = out_str;
