@@ -144,11 +144,6 @@ function processEvent(e) {
     // console.log(`Events list length before append: ${myEvents.length}`);
     myEvents.push(out_str);
     // console.log(`Events list length after append: ${myEvents.length}`);
-
-    // const userNameContainer = document.querySelector('.container .letters');
-    // userNameContainer.innerHTML = out_str;
-    // animate();
-    // userNameContainer.innerHTML = "";
 }
 
 function getTier(tier, gift) {
