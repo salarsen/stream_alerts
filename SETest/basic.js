@@ -1,4 +1,5 @@
-let JWT = "";
+// import { JWT } from './auth.js';
+
 const socket = io('https://realtime.streamelements.com', {
     transports: ['websocket']
 });
@@ -118,11 +119,11 @@ let animate = async() => {
         delay: (el, i) => 150 + 25 * i
             // complete: console.log("Add2")
     }).add({
-        targets: '.container .char, .container .line',
-        opacity: 0,
-        duration: 1000,
-        easing: "easeOutExpo",
-        delay: 1000,
+        // targets: '.container .char, .container .line',
+        // opacity: 0,
+        // duration: 1000,
+        // easing: "easeOutExpo",
+        // delay: 1000,
         complete: () => {
             //console.log(`Animation completed, removing contents and slicing array of length ${myEvents.length}`)
             myEvents.splice(0, 1);
@@ -176,7 +177,7 @@ function displayEvents() {
 //     }
 // }, 3000);
 
-function stringToAnimatedHTML(s) {
+function sToAHTML(s) {
     let stringAsArray = s.split('');
     stringAsArray = stringAsArray.map((letter) => {
         if (letter === " ") {
@@ -195,34 +196,27 @@ function processEvent(e) {
     out_str = ''
     if (listener === 'follower') {
         //console.log(`follow ${event.name}`);
-        out_str = `${stringToAnimatedHTML(event.name)}<span class="icons icons-S char">S</span>`;
+        out_str = `${sToAHTML(event.name)}<span class="icons icons-S char">S</span>`;
     } else if (listener === 'subscriber') {
-        // gifted event
         if (event.gifted && !event.isCommunityGift) {
-            console.log(`gifted: ${event.sender}`)
-                // <span class="icons icons-D char">D</span><span class="char text">${stringToAnimatedHTML(event.name)}</span>`
-            out_str = `${stringToAnimatedHTML(event.sender + " ")}${getTier(event.tier,true)}${stringToAnimatedHTML("->" + event.name)}`;
-            console.log(getTier(event.tier, true));
+            out_str = `${sToAHTML(event.sender + " ")}<span class="icons icons-D char">D</span>${getTier(event.tier,true)}${sToAHTML(" " + event.name)}`;
         } else if (event.bulkGifted) {
-            console.log(`bulk gifts: ${event}`);
-            out_str = `${stringToAnimatedHTML(event.sender + " x" + String(event.amount)+ " ")}${getTier(event.tier,true)};`
-            console.log(getTier(event.tier, true));
+            out_str = `${sToAHTML(event.sender)}<span class="char"><img src="icons/iconfinder_gifts-christmas-give-present_3338447.ico" alt="Gifts" class="img-icon"></span>${getTier(event.tier,true)}${sToAHTML(" x" + String(event.amount))}`;
         } else if (!event.gifted && !event.bulkGifted) {
-            console.log(`subscribed: ${event.name}`);
-            out_str = `${stringToAnimatedHTML(event.name)}${getTier(event.tier,false)}${stringToAnimatedHTML(" x" + String(event.amount))}`;
-            console.log(getTier(event.tier, false));
+            if (event.amount > 1){
+                out_str = `${sToAHTML(event.name)}${getTier(event.tier,false)}${sToAHTML(" x" + String(event.amount))}`;
+            } else {
+                out_str = `${sToAHTML(event.name)}${getTier(event.tier,false)}`;
+            }            
         }
     } else if (listener === 'host') {
-        console.log(`hosted: ${event}`);
+        out_str = `${sToAHTML(event.name)}<span class="char"><img src="icons/iconfinder_Retro_Television_1595462.ico" alt="Host" class="img-icon"></span>${sToAHTML(" x" + String(event.amount))}`;
     } else if (listener === 'cheer') {
-        console.log(`cheer: ${event}`);
-        out_str = `${stringToAnimatedHTML(event.name + " x" + String(event.amount))}<span class="icons icons-A char">A</span>`;
+        out_str = `${sToAHTML(event.name + " x" + String(event.amount))}<span class="icons icons-A char">A</span>`;
     } else if (listener === 'tip') {
-        console.log(`tip: ${event}`);
-        out_str = `${stringToAnimatedHTML(event.name) + " " + currencify(event.amount)}`;
+        out_str = `${sToAHTML(event.name + " " + currencify(event.amount))}`;
     } else if (listener === 'raid') {
-        console.log(`raid: ${event}`);
-        out_str = `${stringToAnimatedHTML(event.name + " ")}<span class="icons icons-H char">H</span>${stringToAnimatedHTML("x " + String(event.amount))}`;
+        out_str = `${sToAHTML(event.name + " ")}<span class="icons icons-H char">H</span>${sToAHTML("x" + String(event.amount))}`;
     }
     // console.log(`Events list length before append: ${myEvents.length}`);
     myEvents.push(out_str);
@@ -230,36 +224,43 @@ function processEvent(e) {
 }
 
 function getTier(tier, gift) {
-    return `<span class="char"><img src="https://cdn.streamelements.com/uploads/a2981df4-845d-4cd6-a123-f1e9f9594809.png" alt="Tier 1" class="img-icon"></span>`;
+    // return `<span class="char"><img src="icons/iconfinder_rating_star_favorite_182463.ico" alt="Tier 1" class="img-icon"></span>`;
     if (gift) {
       switch (String(tier)) {
           case '1000':
               //return `<span class="char text">Tier 1</span>`;
-              return `<span class="char"><img src="//cdn.streamelements.com/uploads/a2981df4-845d-4cd6-a123-f1e9f9594809.png" alt="Tier 1" class="img-icon char"></span>`;
+                return calcTier(1);
           case '2000':
               //return `<span class="char text">Tier 2</span>`;
-              return `<img src="//cdn.streamelements.com/uploads/a2981df4-845d-4cd6-a123-f1e9f9594809.png" alt="Tier 1" class="img-icon char">`;
+                return calcTier(2);
           case '3000':
               //return `<span class="char text">Tier 3</span>`;
-              return `<img src="//cdn.streamelements.com/uploads/a2981df4-845d-4cd6-a123-f1e9f9594809.png" alt="Tier 1" class="img-icon">`;
+                return calcTier(3);
           case 'prime':
-              return `<span class="char icons icons-F">F</span>`;
+                return `<span class="char text">&nbsp;</span><span class="char icons icons-F">F</span>`;
       }
     } else {
-      switch (String(tier)) {
-          case '1000':
-              return `<span class="char text">Tier 1</span>`;
-          
-          case '2000':
-              return `<span class="char text">Tier 2</span>`;
-          case '3000':
-              return `<span class="char text">Tier 3</span>`;
-          case 'prime':
-              return `<span class="char icons icons-F">F</span>`;
+        switch (String(tier)) {
+            case '1000':
+                return calcTier(1);
+            case '2000':
+                return calcTier(2);
+            case '3000':
+                return calcTier(3);
+            case 'prime':
+                return `<span class="char text">&nbsp;</span><span class="char icons icons-F">F</span>`;
       }
     } 
 }
 
+function calcTier(level){
+    toReturn = '';
+    for(i=0;i<level;i++){
+        toReturn += `<span class="char"><img src="icons/iconfinder_rating_star_favorite_182463.ico" alt="Tier 1" class="img-icon"></span>`;
+    }
+
+    return toReturn;
+}
 
 const currencify = (a) => {
     try {
