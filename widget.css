@@ -1,6 +1,6 @@
 .container {
     font-weight: 200;
-    color: black;
+    color: white;
 }
 
 .container .text-wrapper {
@@ -17,7 +17,7 @@
     left: 0;
     height: 2px;
     width: 100%;
-    background-color: black;
+    background-color: white;
     transform-origin: 100% 100%;
     bottom: 0;
 }
@@ -29,7 +29,7 @@
 }
 
 span .text{
-  color: black;
+  color: white;
   font-size: 40px;
   vertical-align: middle;
 }
@@ -46,7 +46,7 @@ span .text{
     font-size: 40px;
     position: relative;
     top: 10px;
-    color: orange;
+    color: white;
 }
 
 .icons-A {

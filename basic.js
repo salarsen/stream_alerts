@@ -86,7 +86,6 @@ let myEvents = [];
 let running = false;
 let tipLocale = 'en-US';
 let tipCurrency = 'USD';
-
 let animate = async() => {
 
     // running = true;
@@ -119,11 +118,11 @@ let animate = async() => {
         delay: (el, i) => 150 + 25 * i
             // complete: console.log("Add2")
     }).add({
-        // targets: '.container .char, .container .line',
-        // opacity: 0,
-        // duration: 1000,
-        // easing: "easeOutExpo",
-        // delay: 1000,
+        targets: '.container .char, .container .line',
+        opacity: 0,
+        duration: 1000,
+        easing: "easeOutExpo",
+        delay: 1000,
         complete: () => {
             //console.log(`Animation completed, removing contents and slicing array of length ${myEvents.length}`)
             myEvents.splice(0, 1);
